@@ -12,4 +12,34 @@ body {
   background-image: url("./assets/NCrypR.png");
   background-repeat: no-repeat;
   background-position: -0px -0px;
+
+  position: relative;
+}
+
+.light {
+  position: absolute;
+
+  margin: 0 auto;
+  width: 100px;
+  height: 90px;
+
+  top: 203px;
+
+  background-color: rgba(#25da73, 0);
+}
+
+#light0 {
+  left: 128.5px;
+}
+#light1 {
+  left: 263.5px;
+}
+#light2 {
+  left: 398.5px;
+}
+#light3 {
+  left: 533.5px;
+}
+#light4 {
+  left: 668.5px;
 }
