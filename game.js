@@ -110,7 +110,7 @@ function nextLevel() {
 
 function reset() {
   length = 3;
-  score = 0;
+  score = -1;
   $("#score").html(score);
 
   nextLevel();
