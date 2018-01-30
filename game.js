@@ -1,14 +1,14 @@
 var game;
 
 var steps = [];
-var length = 3;
+var length = 1;
 var currentStep = 0;
 
 const timeBetweenLights = 35;
 var timeToNextStep = 0;
 
 var isDead = false;
-const deadTime = 15;
+const deadTime = 20;
 var deadTimer = 0;
 
 var isWaitingForInput = false;
@@ -18,12 +18,20 @@ var lightStepWaiting = 0;
 var shouldAllLightsBeRed = false;
 var shouldAllLightsBeGreen = false;
 
+const backgroundMusic = new Audio('assets/minigame_music.wav');
+
+var score = -1;
+var highScore = -1;
+
 $(function() {
   game = $("#game");
   turnOffLights();
 
   $(".light").mousedown(lightDown);
   $(".light").mouseup(lightUp);
+
+  backgroundMusic.loop = true;
+  backgroundMusic.play();
 
   nextLevel();
 
@@ -44,7 +52,7 @@ function update() {
   if(isDead) {
     deadTimer++;
 
-    if (deadTime >= deadTime) {
+    if (deadTimer >= deadTime) {
 			isDead = false;
   		deadTimer = 0;
   	}
@@ -57,6 +65,10 @@ function update() {
   	if(lightShouldBeOn(i)) turnOnLight(i);
   }
 
+  if(timeToNextStep == 0) {
+    playLightOnSound();
+  }
+
   timeToNextStep++;
 
   if (timeToNextStep >= timeBetweenLights) {
@@ -64,8 +76,6 @@ function update() {
 
 		currentStep++;
 		isDead = true;
-
-		// lightOnSound.Play();
 
 		if(currentStep == length) startCollectingInput();
 	}
@@ -94,6 +104,16 @@ function nextLevel() {
 	for(var i = 0; i < length; i++) {
 		steps[i] = getRandomInt(0,5);
 	}
+
+  addScore();
+}
+
+function reset() {
+  length = 3;
+  score = 0;
+  $("#score").html(score);
+
+  nextLevel();
 }
 
 function checkInput() {
@@ -118,6 +138,8 @@ function lightDown() {
   var id = $(this).attr('id');
   var lightIndex = parseInt(id.charAt(id.length - 1));
 
+  playLightPressedSound();
+
   turnOnInputLight(lightIndex);
 }
 function lightUp() {
@@ -130,18 +152,30 @@ function lightUp() {
   lightStepWaiting++;
 
   if(lightStepWaiting == length) {
-    if(checkInput()) {
-      shouldAllLightsBeGreen = true;
-    } else {
-      shouldAllLightsBeRed = true;
-    }
-
     isWaitingForInput = false;
 
-    setTimeout(nextLevel, 1000);
+    if(checkInput()) {
+      playCorrectSound();
+      shouldAllLightsBeGreen = true;
+      setTimeout(nextLevel, 1000);
+    } else {
+      playWrongSound();
+      shouldAllLightsBeRed = true;
+      setTimeout(reset, 2000);
+    }
   }
 
   turnOffLights()
+}
+
+function addScore() {
+  score++;
+  $("#score").html(`${score}`);
+
+  if(score > highScore) {
+    highScore = score;
+    $("#highScore").html(`${highScore}`);
+  }
 }
 
 function turnOnLight(lightIndex) {
@@ -160,45 +194,23 @@ function turnOnRedLights() {
   showSpriteNumber(1);
 }
 
+function playLightOnSound() {
+  var lightOnSound = new Audio('assets/light_up.wav');
+  lightOnSound.play();
+}
+function playLightPressedSound() {
+  var lightPressedSound = new Audio('assets/press_light.wav');
+  lightPressedSound.play();
+}
+function playCorrectSound() {
+  var correctSound = new Audio('assets/correct.wav');
+  correctSound.play();
+}
+function playWrongSound() {
+  var wrongSound = new Audio('assets/wrong.wav');
+  wrongSound.play();
+}
+
 function getRandomInt(min, max) {
   return min + Math.floor(Math.random() * Math.floor(max));
 }
-
-function isEqual(value, other) {
-
-	// Get the value type
-	var type = Object.prototype.toString.call(value);
-
-	// If the two objects are not the same type, return false
-	if (type !== Object.prototype.toString.call(other)) return false;
-
-	// If items are not an object or array, return false
-	if (['[object Array]', '[object Object]'].indexOf(type) < 0) return false;
-
-	// Compare the length of the length of the two items
-	var valueLen = type === '[object Array]' ? value.length : Object.keys(value).length;
-	var otherLen = type === '[object Array]' ? other.length : Object.keys(other).length;
-	if (valueLen !== otherLen) return false;
-
-	// Compare two items
-	var compare = function (item1, item2) {
-		// Code will go here...
-	};
-
-	// Compare properties
-	var match;
-	if (type === '[object Array]') {
-		for (var i = 0; i < valueLen; i++) {
-			compare(value[i], other[i]);
-		}
-	} else {
-		for (var key in value) {
-			if (value.hasOwnProperty(key)) {
-				compare(value[key], other[key]);
-			}
-		}
-	}
-
-	// If nothing failed, return true
-	return true;
-};
