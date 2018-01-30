@@ -1,6 +1,6 @@
 # OpWireMinigameJS
 
-Memory minigame from the game Operation: Wire my team developed at Global Game Jam 2018 written in JS.
+Memory minigame from the game **Operation: Wire** my team developed at Global Game Jam 2018 written in JS.
 
 Play it [here](https://devdudesami.github.io/OpWireMinigameJS/). *Note: sound may not work properly if playing through this link, so it's probably better to mute the tab. Download or clone the repo and run index.html for proper sound.*
 
